@@ -1,0 +1,39 @@
+{
+	"compilerOptions": {
+		"tsBuildInfoFile": "./node_modules/.tmp/tsconfig.app.tsbuildinfo",
+		"target": "esnext",
+		"module": "esnext",
+		"lib": ["ESNext", "DOM"],
+		"types": ["vite/client"],
+		"strict": true,
+		"skipLibCheck": true,
+		"paths": {
+			"react": ["./node_modules/preact/compat/"],
+			"react-dom": ["./node_modules/preact/compat/"]
+		},
+
+		/* Bundler mode & Modules */
+		"moduleResolution": "bundler",
+		"allowImportingTsExtensions": true,
+		"verbatimModuleSyntax": true,
+		"isolatedModules": true,
+		"moduleDetection": "force",
+		"noEmit": true,
+
+		/* JSX */
+		"jsx": "react-jsx",
+		"jsxImportSource": "preact",
+
+		/* Linting & Strictness */
+		"noUnusedLocals": true,
+		"noUnusedParameters": true,
+		// "erasableSyntaxOnly": true,
+		"noFallthroughCasesInSwitch": true,
+		"noImplicitReturns": true,
+		"noUncheckedIndexedAccess": true,
+		"exactOptionalPropertyTypes": true,
+		"noPropertyAccessFromIndexSignature": true,
+		"noImplicitOverride": true
+	},
+	"include": ["src"]
+}
