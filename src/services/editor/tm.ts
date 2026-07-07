@@ -1,4 +1,6 @@
 import { StreamLanguage } from '@codemirror/language';
+import { EditorSelection } from '@codemirror/state';
+import { keymap, type Command } from '@codemirror/view';
 
 const enum FuncState {
 	NONE,
@@ -6,12 +8,11 @@ const enum FuncState {
 	IN_PARAM,
 	EXPECTING_FUNC_NAME,
 }
-
-interface MeaoiuState {
+type MeaoiuState = {
 	commentLevel: number;
 	blockDepth: number;
 	funcState: FuncState;
-}
+};
 
 const KEYWORDS_LIST =
 	'蹭|就是|就像|才是|高仿|抢走|好不好\\?|不然|玩耍|累了|想要|扒|叼回来|偷袭|好喵|坏喵|空碗|和|或|都好|不坏|都坏|不好';
@@ -85,3 +86,27 @@ export const meaoiuSyntaxLanguage = StreamLanguage.define<MeaoiuState>({
 		indentOnInput: /^\s*#\]$/,
 	},
 });
+
+const patternWrap = (char: string, open: string, close: string): Command => {
+	return ({ state, dispatch }) => {
+		if (state.selection.ranges.every(r => r.empty)) return false;
+
+		const changeByRange = state.changeByRange(range => {
+			// 其中某个光标无选中内容，插入单字符
+			const { empty, from } = range;
+			if (empty) return { changes: { from, insert: char }, range: EditorSelection.cursor(from + char.length) };
+			// 有选中内容，两侧插入闭合符
+			const changes = [
+				{ from, insert: open },
+				{ from: range.to, insert: close },
+			];
+			return { changes, range: EditorSelection.range(range.anchor + open.length, range.head + open.length) };
+		});
+		dispatch(state.update(changeByRange, { scrollIntoView: true, userEvent: 'input.type' }));
+		return true;
+	};
+};
+export const meaoiuAutoPairKeymap = keymap.of([
+	{ key: '=', run: patternWrap('=', '[=', '=]') },
+	{ key: '#', run: patternWrap('#', '[#', '#]') },
+]);

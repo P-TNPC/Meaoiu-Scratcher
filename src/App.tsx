@@ -4,9 +4,8 @@ import { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'preac
 import { Console } from './components/Console';
 import { Editor } from './components/Editor';
 import { LAYOUT_MODES, type LayoutMode, THEME_MODES, type ThemeMode, Toolbar } from './components/Toolbar';
-import type { LogType, PromptState } from './services/executor';
-import { appendStyledText, runCode, terminateExecution } from './services/executor';
-import { meaoiuFormatting } from './services/lsp';
+import { meaoiuFormatting } from './services/editor/lsp';
+import world, { appendStyledText, type LogType, type PromptState, terminateExecution } from './services/execution/executor';
 
 export function App() {
 	const viewRef = useRef<EditorView>(null);
@@ -79,7 +78,8 @@ export function App() {
 			return;
 		}
 		clearLogs();
-		await runCode(viewRef.current, addLog, setPendingPrompt, setIsRunning, setInputValue);
+		const me = { view: viewRef.current, addLog, setPendingPrompt, setIsRunning, setInputValue };
+		await world.execute(me);
 	};
 	const handleFormat = () => void (viewRef.current && meaoiuFormatting(viewRef.current));
 	const toggleLayout = () => {

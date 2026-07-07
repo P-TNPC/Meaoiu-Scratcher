@@ -1,6 +1,6 @@
 import { EditorView } from 'codemirror';
 import { MeaoiuError } from 'meaoiu';
-import { setRuntimeErrorEffect } from './lsp';
+import { setRuntimeErrorEffect } from '../editor/lsp';
 import RunnerWorker from './runner.worker?worker';
 import type { HostMessage, WorkerMessage } from './workerTypes';
 
@@ -34,13 +34,14 @@ export function terminateExecution() {
 	worker = new RunnerWorker(); // 强制中断后立即重建
 }
 
-export async function runCode(
-	view: EditorView,
-	addLog: (text: string, type: LogType) => void,
-	setPendingPrompt: (prompt: PromptState) => void,
-	setIsRunning: (isRunning: boolean) => void,
-	setInputValue: (value: string) => void,
-) {
+interface executeParam {
+	view: EditorView;
+	addLog: (text: string, type: LogType) => void;
+	setPendingPrompt: (prompt: PromptState) => void;
+	setIsRunning: (isRunning: boolean) => void;
+	setInputValue: (value: string) => void;
+}
+async function execute({ view, addLog, setPendingPrompt, setIsRunning, setInputValue }: executeParam) {
 	setIsRunning(true);
 
 	view.dispatch({ effects: setRuntimeErrorEffect.of(null) });
@@ -100,3 +101,5 @@ export async function runCode(
 
 	post({ type: 'RUN', sourceCode });
 }
+
+export default { execute };

@@ -18,8 +18,8 @@ import {
 import { EditorView } from 'codemirror';
 import type { CSSProperties, RefObject } from 'preact';
 import { useEffect, useRef } from 'preact/hooks';
-import { inlayHintsCompartment, meaoiuInlayHints, meaoiuLanguageSupport, runtimeErrorField } from '../services/lsp';
-import { meaoiuEditorBaseTheme } from '../services/theme';
+import { inlayHintsCompartment, meaoiuInlayHints, meaoiuLanguageSupport, runtimeErrorField } from '../services/editor/lsp';
+import { meaoiuEditorBaseTheme } from '../services/editor/theme';
 
 import exampleMiu from '../example.miu?raw';
 

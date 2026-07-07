@@ -1,5 +1,5 @@
 import type { RefObject } from 'preact';
-import type { PromptState } from '../services/executor';
+import type { PromptState } from '../services/execution/executor';
 
 interface ConsoleProps {
 	isRunning: boolean;
