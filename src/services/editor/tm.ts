@@ -1,6 +1,6 @@
 import { StreamLanguage } from '@codemirror/language';
 import { EditorSelection } from '@codemirror/state';
-import { keymap, type Command } from '@codemirror/view';
+import { EditorView } from '@codemirror/view';
 
 const enum FuncState {
 	NONE,
@@ -87,26 +87,25 @@ export const meaoiuSyntaxLanguage = StreamLanguage.define<MeaoiuState>({
 	},
 });
 
-const patternWrap = (char: string, open: string, close: string): Command => {
-	return ({ state, dispatch }) => {
-		if (state.selection.ranges.every(r => r.empty)) return false;
+const patternWrap = ({ state, dispatch }: EditorView, char: string, open: string, close: string): boolean => {
+	if (state.selection.ranges.every(r => r.empty)) return false;
 
-		const changeByRange = state.changeByRange(range => {
-			// 其中某个光标无选中内容，插入单字符
-			const { empty, from } = range;
-			if (empty) return { changes: { from, insert: char }, range: EditorSelection.cursor(from + char.length) };
-			// 有选中内容，两侧插入闭合符
-			const changes = [
-				{ from, insert: open },
-				{ from: range.to, insert: close },
-			];
-			return { changes, range: EditorSelection.range(range.anchor + open.length, range.head + open.length) };
-		});
-		dispatch(state.update(changeByRange, { scrollIntoView: true, userEvent: 'input.type' }));
-		return true;
-	};
+	const changeByRange = state.changeByRange(range => {
+		// 其中某个光标无选中内容，插入单字符
+		const { empty, from } = range;
+		if (empty) return { changes: { from, insert: char }, range: EditorSelection.cursor(from + char.length) };
+		// 有选中内容，两侧插入闭合符
+		const changes = [
+			{ from, insert: open },
+			{ from: range.to, insert: close },
+		];
+		return { changes, range: EditorSelection.range(range.anchor + open.length, range.head + open.length) };
+	});
+	dispatch({ ...changeByRange, scrollIntoView: true, userEvent: 'input.type' });
+	return true;
 };
-export const meaoiuAutoPairKeymap = keymap.of([
-	{ key: '=', run: patternWrap('=', '[=', '=]') },
-	{ key: '#', run: patternWrap('#', '[#', '#]') },
-]);
+export const meaoiuAutoPair = EditorView.inputHandler.of((view, _from, _to, text) => {
+	if (text === '=') return patternWrap(view, '=', '[=', '=]');
+	if (text === '#') return patternWrap(view, '#', '[#', '#]');
+	return false;
+});

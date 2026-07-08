@@ -18,7 +18,7 @@ import {
 } from 'meaoiu';
 import { confirmDialog } from '../confirmDialog';
 import { meaoiuHighlightStyle, meaoiuTheme } from './theme';
-import { meaoiuAutoPairKeymap, meaoiuSyntaxLanguage } from './tm';
+import { meaoiuAutoPair, meaoiuSyntaxLanguage } from './tm';
 
 // 状态管理
 const stateManager = new StateManager(true);
@@ -217,7 +217,7 @@ export const runtimeErrorField = StateField.define<DecorationSet>({
 // 插件整合导出
 export const meaoiuLanguageSupport = [
 	meaoiuSyntaxLanguage,
-	meaoiuAutoPairKeymap,
+	meaoiuAutoPair,
 	syntaxHighlighting(meaoiuHighlightStyle),
 	meaoiuServiceStateField,
 	meaoiuLinter,
