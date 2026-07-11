@@ -1,4 +1,4 @@
-import { autocompletion } from '@codemirror/autocomplete';
+import { autocompletion, snippet } from '@codemirror/autocomplete';
 import { syntaxHighlighting } from '@codemirror/language';
 import { linter, type Diagnostic } from '@codemirror/lint';
 import { Compartment, RangeSetBuilder, StateEffect, StateField, type EditorState } from '@codemirror/state';
@@ -60,10 +60,14 @@ const meaoiuAutocompletion = autocompletion({
 			const line = lineObj.number;
 			const character = pos - lineObj.from + 1;
 
-			const options = getCompletions(serviceState, { line, character }).map(({ label, kind }) => ({
-				label,
-				type: kind === 14 ? 'keyword' : kind === 3 ? 'function' : 'variable',
-			}));
+			const options = getCompletions(serviceState, { line, character }).map(s => {
+				const { label, kind } = s;
+				return {
+					label,
+					type: kind === 14 ? 'keyword' : kind === 3 ? 'function' : kind === 15 ? 'snippet' : 'variable',
+					apply: kind === 15 && s.insertTextFormat === 2 ? snippet(s.insertText) : label,
+				};
+			});
 			return { from: word?.from ?? pos, options };
 		},
 	],
