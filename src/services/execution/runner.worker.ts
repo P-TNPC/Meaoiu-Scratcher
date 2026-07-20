@@ -35,6 +35,16 @@ self.onmessage = async ({ data }: MessageEvent<HostMessage>) => {
 			self.addEventListener('message', handler);
 			return promise;
 		},
+		onSleep: (wakeup, seconds) => {
+			post({ type: 'SLEEP', seconds });
+			const handler = ({ data: hostMsg }: MessageEvent<HostMessage>) => {
+				if (hostMsg.type !== 'WAKEUP') return;
+				self.removeEventListener('message', handler);
+				wakeup();
+			};
+			self.addEventListener('message', handler);
+			return () => (self.removeEventListener('message', handler), post({ type: 'AWAKE' }));
+		},
 		styleize: webColorize,
 	};
 	try {

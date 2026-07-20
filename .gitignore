@@ -12,6 +12,7 @@ dist
 dist-ssr
 *.local
 /bun.lock
+/public/CNAME
 
 # Editor directories and files
 .vscode/*

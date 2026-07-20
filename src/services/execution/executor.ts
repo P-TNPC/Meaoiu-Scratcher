@@ -9,6 +9,10 @@ export type PromptState = {
 	question: string;
 	resolve: (answer: string) => void;
 } | null;
+export type SleepState = {
+	seconds: number;
+	wakeup: () => void;
+} | null;
 
 const MARKER_REGEX = /\x01(\w+)\x02([\s\S]*?)\x03/g;
 export function appendStyledText(parent: HTMLElement, raw: string): void {
@@ -38,10 +42,11 @@ interface executeParam {
 	view: EditorView;
 	addLog: (text: string, type: LogType) => void;
 	setPendingPrompt: (prompt: PromptState) => void;
+	setSleepState: (state: SleepState) => void;
 	setIsRunning: (isRunning: boolean) => void;
 	setInputValue: (value: string) => void;
 }
-async function execute({ view, addLog, setPendingPrompt, setIsRunning, setInputValue }: executeParam) {
+async function execute({ view, addLog, setPendingPrompt, setSleepState, setIsRunning, setInputValue }: executeParam) {
 	setIsRunning(true);
 
 	view.dispatch({ effects: setRuntimeErrorEffect.of(null) });
@@ -53,7 +58,7 @@ async function execute({ view, addLog, setPendingPrompt, setIsRunning, setInputV
 	const sourceCode = snapshotDoc.toString();
 
 	const post = (msg: HostMessage) => worker.postMessage(msg);
-	const finish = () => (setPendingPrompt(null), setIsRunning(false), setInputValue(''));
+	const finish = () => (setPendingPrompt(null), setSleepState(null), setIsRunning(false), setInputValue(''));
 
 	worker.onmessage = ({ data }: MessageEvent<WorkerMessage>): void => {
 		switch (data.type) {
@@ -67,6 +72,10 @@ async function execute({ view, addLog, setPendingPrompt, setIsRunning, setInputV
 					resolve: answer => (post({ type: 'ANSWER', answer }), setPendingPrompt(null), setInputValue('')),
 				});
 			}
+			case 'SLEEP':
+				return setSleepState({ seconds: data.seconds, wakeup: () => (post({ type: 'WAKEUP' }), setSleepState(null)) });
+			case 'AWAKE':
+				return setSleepState(null);
 			case 'DONE':
 				addLog('\n结束了~', 'system');
 				addLog('神谕显影喵~', 'success');

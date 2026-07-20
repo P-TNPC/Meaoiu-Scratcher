@@ -1,3 +1,4 @@
+import { VERSION } from 'meaoiu';
 import { useEffect, useState } from 'preact/hooks';
 
 export const LAYOUT_MODES = [
@@ -82,7 +83,7 @@ export function Toolbar({
 			<button className='meaoiu-btn btn-secondary menu-toggle' onClick={() => setShowMenu(!showMenu)}>
 				<span className='nerd-icon'></span>
 			</button>
-			<h2 className='title'>
+			<h2 className='title' title={VERSION}>
 				喵谕
 				<span className='title-suffix' title='不是手抓饭'>
 					爪抓板

@@ -391,6 +391,53 @@ body {
 						animation: term-blink 3s steps(3) infinite;
 					}
 				}
+				.term-sleep {
+					display: flex;
+					align-items: center;
+					gap: 1.25ch;
+					padding: 0.375rem 0;
+					animation: term-fade-in 0.5s ease-in-out;
+					outline: none;
+
+					.term-sleep-icon {
+						margin-left: -0.5ch;
+						animation: term-sleep-pulse 2s ease-in-out infinite;
+					}
+					.term-sleep-reason {
+						color: var(--accent-purple);
+						font-style: italic;
+
+						&.countdown{
+							color: var(--text-muted);
+						}
+					}
+					.term-sleep-btn {
+						padding: 0.4rem 0.625rem;
+						border: none;
+						border-radius: 0.75rem;
+						background: var(--btn-secondary-bg);
+						cursor: pointer;
+						font-family: inherit;
+						font-size: 0.875em;
+						line-height: 1.125;
+						color: var(--text-secondary);
+						transition: all 0.15s;
+
+						&:hover {
+							background-color: var(--accent-purple);
+							color: var(--bg-primary);
+						}
+						&:active {
+							transform: scale(0.95);
+						}
+					}
+					.term-sleep-hint {
+						margin-left: auto;
+						font-size: 0.875em;
+						color: var(--text-faint);
+						letter-spacing: 0.03em;
+					}
+				}
 			}
 		}
 	}
@@ -448,6 +495,17 @@ body {
 	}
 	75% {
 		clip-path: inset(0 0 0 0%);
+	}
+}
+@keyframes term-sleep-pulse {
+	0%,
+	100% {
+		opacity: 1;
+		transform: scale(1) translate(-0.05em, 0.025em);
+	}
+	50%,55% {
+		opacity: 0.3;
+		transform: scale(1.2) translate(0.0225em, -0.06em) rotate(-3deg);
 	}
 }
 /* 值类型着色（对标 ANSI）*/

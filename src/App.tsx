@@ -5,7 +5,7 @@ import { Console } from './components/Console';
 import { Editor } from './components/Editor';
 import { LAYOUT_MODES, type LayoutMode, THEME_MODES, type ThemeMode, Toolbar } from './components/Toolbar';
 import { meaoiuFormatting } from './services/editor/lsp';
-import world, { appendStyledText, type LogType, type PromptState, terminateExecution } from './services/execution/executor';
+import world, { appendStyledText, type LogType, type PromptState, type SleepState, terminateExecution } from './services/execution/executor';
 
 export function App() {
 	const viewRef = useRef<EditorView>(null);
@@ -16,6 +16,7 @@ export function App() {
 
 	const [isRunning, setIsRunning] = useState(false);
 	const [pendingPrompt, setPendingPrompt] = useState<PromptState>(null);
+	const [sleepState, setSleepState] = useState<SleepState>(null);
 	const [inputValue, setInputValue] = useState('');
 	const [showInlayHints, setShowInlayHints] = useState(false);
 	const [tabSize, setTabSize] = useState<number>(4);
@@ -69,6 +70,7 @@ export function App() {
 	const handleRunOrStop = async () => {
 		if (!viewRef.current) return;
 		setPendingPrompt(null);
+		setSleepState(null);
 		setInputValue('');
 		if (isRunning) {
 			terminateExecution();
@@ -78,7 +80,7 @@ export function App() {
 			return;
 		}
 		clearLogs();
-		const me = { view: viewRef.current, addLog, setPendingPrompt, setIsRunning, setInputValue };
+		const me = { view: viewRef.current, addLog, setPendingPrompt, setSleepState, setIsRunning, setInputValue };
 		await world.execute(me);
 	};
 	const handleFormat = () => void (viewRef.current && meaoiuFormatting(viewRef.current));
@@ -155,6 +157,7 @@ export function App() {
 						isRunning={isRunning}
 						hasLogs={hasLogs}
 						pendingPrompt={pendingPrompt}
+						sleepState={sleepState}
 						inputValue={inputValue}
 						setInputValue={setInputValue}
 						handleInputKeyDown={handlePromptSubmit}
